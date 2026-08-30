@@ -1,0 +1,125 @@
+# Public reference source for a generic Canvas Component.
+# Validate against a Component Library extracted from Power Apps Studio before import.
+ComponentDefinitions:
+  cmpAppHeader:
+    DefinitionType: CanvasComponent
+    AccessAppScope: false
+    AllowCustomization: true
+    CustomProperties:
+      AppName:
+        PropertyKind: Input
+        DataType: Text
+        Default: ="Sample Workspace"
+        Description: "Application name displayed in the header."
+      UserDisplayName:
+        PropertyKind: Input
+        DataType: Text
+        Default: =""
+        Description: "Optional user name displayed in the greeting."
+      AccentColor:
+        PropertyKind: Input
+        DataType: Color
+        Default: =RGBA(37,99,235,1)
+        Description: "Accent color supplied by the consuming app."
+      Theme:
+        PropertyKind: Input
+        DataType: Text
+        Default: ="light"
+        Description: "light or dark."
+      Variant:
+        PropertyKind: Input
+        DataType: Text
+        Default: ="default"
+        Description: "compact, default, or prominent."
+      ShowNotifications:
+        PropertyKind: Input
+        DataType: Boolean
+        Default: =true
+        Description: "Shows the notification action."
+      NotificationCount:
+        PropertyKind: Input
+        DataType: Number
+        Default: =0
+        Description: "Unread notification count."
+      OnBrandSelect:
+        PropertyKind: Behavior
+        DataType: None
+        Description: "Handled by the consuming app."
+      OnNotificationSelect:
+        PropertyKind: Behavior
+        DataType: None
+        Description: "Handled by the consuming app."
+      OnProfileSelect:
+        PropertyKind: Behavior
+        DataType: None
+        Description: "Handled by the consuming app."
+    Properties:
+      Width: =Parent.Width
+      Height: =Switch(cmpAppHeader.Variant, "compact", 48, "prominent", 72, 56)
+      Fill: =If(cmpAppHeader.Theme = "dark", RGBA(17,24,39,1), RGBA(255,255,255,1))
+    Children:
+      - ctnHeader:
+          Control: GroupContainer@1.3.0
+          Variant: AutoLayout
+          Properties:
+            Width: =cmpAppHeader.Width
+            Height: =cmpAppHeader.Height
+            Fill: =cmpAppHeader.Fill
+            LayoutDirection: =LayoutDirection.Horizontal
+            LayoutAlignItems: =LayoutAlignItems.Center
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+            PaddingLeft: =16
+            PaddingRight: =16
+            Gap: =12
+          Children:
+            - btnBrand:
+                Control: Button@0.0.45
+                Variant: Subtle
+                Properties:
+                  Text: =Left(cmpAppHeader.AppName, 1)
+                  Width: =44
+                  Height: =44
+                  Fill: =cmpAppHeader.AccentColor
+                  Color: =RGBA(255,255,255,1)
+                  OnSelect: =cmpAppHeader.OnBrandSelect()
+                  TabIndex: =1
+                  AccessibleLabel: ="Go to application home"
+            - lblAppName:
+                Control: Text@0.0.51
+                Properties:
+                  Text: =cmpAppHeader.AppName
+                  Size: =If(cmpAppHeader.Variant = "prominent", 20, 16)
+                  Weight: =FontWeight.Semibold
+                  Color: =If(cmpAppHeader.Theme = "dark", RGBA(255,255,255,1), RGBA(17,24,39,1))
+                  Overflow: =Overflow.Hidden
+            - lblGreeting:
+                Control: Text@0.0.51
+                Properties:
+                  Visible: =And(Not(IsBlank(cmpAppHeader.UserDisplayName)), Parent.Width >= 480)
+                  Text: ="Hello, " & cmpAppHeader.UserDisplayName
+                  Color: =If(cmpAppHeader.Theme = "dark", RGBA(209,213,219,1), RGBA(75,85,99,1))
+                  Align: =Align.Center
+                  FillPortions: =1
+            - btnNotifications:
+                Control: Button@0.0.45
+                Variant: Subtle
+                Properties:
+                  Visible: =cmpAppHeader.ShowNotifications
+                  Text: =If(cmpAppHeader.NotificationCount > 0, Text(Min(cmpAppHeader.NotificationCount, 99)), "")
+                  Icon: =Icon.Bell
+                  Width: =44
+                  Height: =44
+                  OnSelect: =cmpAppHeader.OnNotificationSelect()
+                  TabIndex: =2
+                  AccessibleLabel: |-
+                    ="Notifications: " & cmpAppHeader.NotificationCount & " unread"
+            - btnProfile:
+                Control: Button@0.0.45
+                Variant: Subtle
+                Properties:
+                  Text: =If(IsBlank(cmpAppHeader.UserDisplayName), "U", Left(cmpAppHeader.UserDisplayName, 1))
+                  Width: =44
+                  Height: =44
+                  OnSelect: =cmpAppHeader.OnProfileSelect()
+                  TabIndex: =3
+                  AccessibleLabel: ="Open user profile menu"

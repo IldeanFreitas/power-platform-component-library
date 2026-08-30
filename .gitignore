@@ -1,0 +1,9 @@
+# Never publish exported apps, solutions, environments, or secrets.
+*.msapp
+*.zip
+*.env
+*.pbix
+*.pbit
+dist/
+build/
+out/
